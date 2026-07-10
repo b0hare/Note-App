@@ -1,6 +1,6 @@
 function SavedDetails(props) {
     return (
-        <div className="showDetails p-2 text-black">{props.details} </div>
+        <div className="showDetails p-2">{props.details} </div>
     )
 }
 

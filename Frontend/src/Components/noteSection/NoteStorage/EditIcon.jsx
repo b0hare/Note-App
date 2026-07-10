@@ -1,11 +1,20 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faPenNib} from '@fortawesome/free-solid-svg-icons';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import {faPenNib} from '@fortawesome/free-solid-svg-icons';
+
+import { Pencil } from 'lucide-react';
+import { useContext } from 'react';
+import { ThemeData } from '../../../Utils/NotesFunctionalities';
+
 
 function Edit(props) {
+    const { theme } = useContext(ThemeData)
     return (
-        <FontAwesomeIcon className='cursor-pointer' icon={faPenNib} onClick={() => {
+        <button className={`cursor-pointer p-2 rounded-md ${theme === 'light' ? 'bg-[#efeaff]' : 'bg-[#161629]'}`} onClick={() => {
             props.editNote(props.idx, props.setNotes, props.setTitle, props.setDetails, props.notes)
-        }} />
+        }}>
+            <Pencil color="#a855f7" size={16} />
+        </button>
+
     )
 }
 

@@ -1,7 +1,6 @@
 import Heading from "./Heading";
 import Detail from "./NotesDetail";
 import Btns from './Buttons';
-import { useState } from 'react'
 
 function NoteSheet(props) {
 

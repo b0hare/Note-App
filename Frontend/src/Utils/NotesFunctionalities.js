@@ -25,9 +25,23 @@ export const submitHandler = (title, details, setNotes, setTitle, setDetails, no
         toast.error("Oops! This process requires some input.");
     }
     else {
-        const notesCopy = [...notes];
-        notesCopy.push({ title, details })
-        setNotes(notesCopy)
+        const formattedDate = new Intl.DateTimeFormat('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        }).format(new Date())
+            .replace(',', '')
+            .replace('at', '•');
+
+        const newNote = {
+            title: title,
+            details: details,
+            dateTime: formattedDate
+        }
+        setNotes([...notes, newNote])
 
         setTitle('')
         setDetails('')
@@ -36,3 +50,5 @@ export const submitHandler = (title, details, setNotes, setTitle, setDetails, no
 }
 
 export const ThemeData = createContext()
+
+
