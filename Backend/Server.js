@@ -4,6 +4,8 @@ import session from 'express-session'
 import db from './config/db.js';
 import mailRouter from './Routes/mailRoute.js';
 import cors from "cors";
+import registerRouter from './Routes/registerRoute.js';
+import otpVerifyRouter from './Routes/otpVerifyRoute.js';
 
 const app = express()
 const PORT = 3000
@@ -35,6 +37,8 @@ app.get('/', (req,res) => {
 
 app.use('/', authRouter)
 app.use('/', mailRouter)
+app.use('/', registerRouter)
+app.use('/', otpVerifyRouter)
 
 const [users] = await db.query("SELECT * FROM users")
 // console.log(users);

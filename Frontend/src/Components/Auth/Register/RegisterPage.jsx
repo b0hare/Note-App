@@ -8,7 +8,7 @@ export const RegisterPage = () => {
     const { theme} = useContext(ThemeData)
 
     return (
-        <div className={`w-full ${theme === 'light' ? "bg-[#F9F9FF] text-black" : "bg-black text-white"} flex flex-col justify-center items-center mt-5`}>
+        <div className={`w-full ${theme === 'light' ? "bg-[#F9F9FF] text-black" : "bg-black text-white"} flex flex-col justify-center items-center`}>
             <RegisterTop/>
             <RegisterForm/>
         </div>

@@ -51,4 +51,7 @@ export const submitHandler = (title, details, setNotes, setTitle, setDetails, no
 
 export const ThemeData = createContext()
 
+export const EmailData = createContext()
+
+
 
