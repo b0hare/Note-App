@@ -1,17 +1,16 @@
 import express from 'express'
-import authRouter from './Routes/loginRoute.js';
+import authRouter from './Routes/authRoute.js';
 import session from 'express-session'
-import db from './config/db.js';
 import mailRouter from './Routes/mailRoute.js';
 import cors from "cors";
-import registerRouter from './Routes/registerRoute.js';
 import otpVerifyRouter from './Routes/otpVerifyRoute.js';
+import profileRouter from './Routes/profileRoute.js';
+import MySQLStoreFactory from 'express-mysql-session';
+import db from './config/db.js';
+import noteRouter from './Routes/noteRoute.js';
 
 const app = express()
 const PORT = 3000
-
-// console.log("EMAIL_USER:", process.env.EMAIL_USER);
-// console.log("EMAIL_PASS:", process.env.EMAIL_PASS);
 
 app.use(cors({
     origin: "http://localhost:5173",
@@ -20,8 +19,13 @@ app.use(cors({
 
 app.use(express.json())
 
+const MySQLStore = MySQLStoreFactory(session);
+const sessionStore = new MySQLStore({}, db)
+
 app.use(session({
+    key: "notes_app_sid",
     secret: "MyNotesAppSecretKeyIsVeryVerySecret",
+    store: sessionStore,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -37,12 +41,10 @@ app.get('/', (req,res) => {
 
 app.use('/', authRouter)
 app.use('/', mailRouter)
-app.use('/', registerRouter)
 app.use('/', otpVerifyRouter)
-
-const [users] = await db.query("SELECT * FROM users")
-// console.log(users);
-
+app.use('/', profileRouter)
+app.use('/', authRouter)
+app.use('/notes', noteRouter)
 
 const server = app.listen(PORT, () => {
     console.log(`Server is listening ${PORT}`);

@@ -1,6 +1,5 @@
 import axios from "axios";
 import toast from "react-hot-toast";
-import { replace } from "react-router-dom";
 
 export function handleName(e, alpha, setAlpha) {        //Name
     alpha = e.target.value
@@ -106,12 +105,12 @@ export const validPass = (e, setPass, setPassMsg) => {
 export async function handleSubmit(e, name, email, pass, confPass, verifyStatus, navigate) {
     e.preventDefault()
     try {
-        await axios.post("http://localhost:3000/user-registration", { name, email, pass, verifyStatus })
+        await axios.post("http://localhost:3000/user-registration", { name, email, pass, verifyStatus }, {withCredentials: true})
         toast.success(`Account Created`)
         navigate("/", { replace: true })
     } catch (error) {
-        if (error.status === 400) {
-            toast.error("OTP verifation Failed")
+        if (error.status === 403) {
+            toast.error("Email not varify")
         }
         else {
             toast.error("Registraion Failed")
@@ -124,7 +123,7 @@ export async function handleSubmit(e, name, email, pass, confPass, verifyStatus,
 
 export async function validUser(email,pass, navigate) {
     try {
-            const loggedIn = await axios.post("http://localhost:3000/login", { email, pass })
+            const loggedIn = await axios.post("http://localhost:3000/login", { email, pass }, {withCredentials: true})
             toast.success(`Welcome ${loggedIn.data}`)
             navigate('/', {replace: true})
         } catch (err) {
