@@ -124,9 +124,11 @@ export async function handleSubmit(e, name, email, pass, confPass, verifyStatus,
 export async function validUser(email,pass, navigate) {
     try {
             const loggedIn = await axios.post("http://localhost:3000/login", { email, pass }, {withCredentials: true})
-            toast.success(`Welcome ${loggedIn.data}`)
+            toast.success(`Welcome ${loggedIn.data.name}`)
             navigate('/', {replace: true})
         } catch (err) {
-            toast.error(err.response.data)
+            console.log(err.response.data);
+            
+            // toast.error(err.response.data)
         }
 }

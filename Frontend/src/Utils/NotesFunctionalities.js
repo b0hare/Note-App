@@ -2,22 +2,31 @@ import { createContext } from "react";
 import toast from "react-hot-toast";
 import axios from 'axios'
 
-export const deleteNote = (idxToDelete, setNotes) => {
+export const deleteNote = async (id, setNotes) => {
 
-    setNotes(prevNotes => {
-        const updated = prevNotes.filter(
-            (_, idx) => idx !== idxToDelete
-        );
+    let deleted = []
+    try {
+        deleted = await axios.delete(`http://localhost:3000/notes/delete/${id}`, { withCredentials: true })
+        toast.success(deleted.data)
+    } catch (error) {
+        toast.error("Couldn't Delete")
+    }
 
-        return updated;
-    });
+    if (deleted.status === 200) {
+        setNotes(prevNotes => {
+            return prevNotes.filter(
+                note => note.id !== id
+            );
+        });
+    }
+    
 };
 
 
-export const editNote = (idxToEdit, setNotes, setTitle, setDetails, notes) => {
-    setTitle(notes[idxToEdit].title)
-    setDetails(notes[idxToEdit].details)
-    deleteNote(idxToEdit, setNotes);
+export const editNote = (idToEdit, arIdx, setNotes, setTitle, setDetails, notes) => {
+    setTitle(notes[arIdx].title)
+    setDetails(notes[arIdx].content)
+    deleteNote(idToEdit, setNotes);
 }
 
 
@@ -28,32 +37,12 @@ export const submitHandler = async (title, details, setNotes, setTitle, setDetai
     else {
         try {
             const create = await axios.post("http://localhost:3000/notes/create", { title, details }, { withCredentials: true })
-            toast.success(create.data.message)
+            toast.success("Saved")
+            setNotes(prev => [...prev, create.data])
         } catch (error) {
-            console.log(error);
             toast.error("Note Couldn't save")
         }
 
-        const formattedDate = new Intl.DateTimeFormat('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
-        }).format(new Date())
-            .replace(',', '')
-            .replace('at', '•');
-
-        const newNote = {
-            title: title,
-            details: details,
-            dateTime: formattedDate
-        }
-        setNotes([...notes, newNote])
-
-        setTitle('')
-        setDetails('')
     }
 
 }
@@ -71,9 +60,9 @@ export const getUser = async (setUser) => {
 };
 
 // to get all the notes 
-export async function allNotes() {
-    const notes = await axios.get(`http://localhost:3000/notes/${user.userId}`)
-    return notes
+export async function allNotes(userId) {
+    const notes = await axios.get(`http://localhost:3000/notes/${userId}`, { withCredentials: true })
+    return notes.data
 }
 
 

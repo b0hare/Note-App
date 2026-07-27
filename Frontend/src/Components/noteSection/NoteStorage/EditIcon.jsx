@@ -10,7 +10,7 @@ function Edit(props) {
     const { theme } = useContext(ThemeData)
     return (
         <button className={`cursor-pointer p-2 rounded-md ${theme === 'light' ? 'bg-[#efeaff]' : 'bg-[#161629]'}`} onClick={() => {
-            props.editNote(props.idx, props.setNotes, props.setTitle, props.setDetails, props.notes)
+            props.editNote(props.id, props.arIdx, props.setNotes, props.setTitle, props.setDetails, props.notes)
         }}>
             <Pencil color="#a855f7" size={16} />
         </button>

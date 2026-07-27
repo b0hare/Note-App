@@ -7,7 +7,6 @@ import { Routes, Route } from 'react-router-dom'
 import { RegisterPage } from './Components/Auth/Register/RegisterPage.jsx';
 import { LoginPage } from './Components/Auth/Login/LoginPage.jsx';
 import PageError from './PageError.jsx'
-import axios from 'axios'
 
 function App() {
   const [theme, setTheme] = useState('dark')

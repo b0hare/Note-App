@@ -24,7 +24,6 @@ export const registerCont = async (req, res) => {
 
 
 export async function loginControll(req, res) {
-    console.log("login controllwer");
     
     const { email, pass } = req.body;
     const [rows] = await db.execute(`SELECT id, name, password FROM users WHERE email = ?`, [email]);
