@@ -38,6 +38,7 @@ export async function loginControll(req, res) {
             req.session.name = user.name;
             
             return res.status(200).json({
+                authenticated: true,
                 name: user.name,
                 userId: user.id
             })
