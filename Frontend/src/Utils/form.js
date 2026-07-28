@@ -1,5 +1,6 @@
 import axios from "axios";
 import toast from "react-hot-toast";
+import { getUser } from "./NotesFunctionalities";
 
 export function handleName(e, alpha, setAlpha) {        //Name
     alpha = e.target.value
@@ -103,7 +104,7 @@ export const validPass = (e, setPass, setPassMsg) => {
 
 
 export async function handleSubmit(e, name, email, pass, confPass, verifyStatus, navigate) {
-    e.preventDefault()
+    // e.preventDefault()
     try {
         await axios.post("http://localhost:3000/user-registration", { name, email, pass, verifyStatus }, {withCredentials: true})
         toast.success(`Account Created`)
@@ -121,14 +122,14 @@ export async function handleSubmit(e, name, email, pass, confPass, verifyStatus,
 
 // login 
 
-export async function validUser(email,pass, navigate) {
+export async function validUser(email, pass, setUser, navigate) {
     try {
             const loggedIn = await axios.post("http://localhost:3000/login", { email, pass }, {withCredentials: true})
             toast.success(`Welcome ${loggedIn.data.name}`)
+            setUser(loggedIn.data)
             navigate('/', {replace: true})
         } catch (err) {
-            console.log(err.response.data);
-            
-            // toast.error(err.response.data)
+            console.error(err.response.data);
+            toast.error("Incorrect Credentials")
         }
 }

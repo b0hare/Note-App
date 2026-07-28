@@ -2,6 +2,8 @@ import Heading from "./Heading";
 import Detail from "./NotesDetail";
 import Btns from './Buttons';
 import toast from "react-hot-toast";
+import { useContext } from "react";
+import { UserData } from "../../Utils/NotesFunctionalities";
 
 function NoteSheet(props) {
 
@@ -15,13 +17,12 @@ function NoteSheet(props) {
         props.setDetails("")
     }
 
+    const {setUser} = useContext(UserData)
+
     return (
         <form onSubmit={(e) => {
             e.preventDefault();
-            props.submitHandler(props.title, props.details, props.setNotes, props.setTitle, props.setDetails, props.notes);
-
-            props.setTitle("")
-            props.setDetails("")
+            props.submitHandler( props.title, props.details, props.setTitle, props.setDetails, props.setNotes, setUser);
 
         }} className="min-w-80 lg:w-1/2 h-1/2 md:w-1/2 w-70  p-5 rounded-md noteSheet flex flex-col gap-2">
             <Heading title={props.title} setTitle={props.setTitle} />

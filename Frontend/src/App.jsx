@@ -1,5 +1,5 @@
 import './App.css'
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Header from './Components/header/header'
 import NoteSection from './Components/noteSection/NoteSection';
 import { getUser, ThemeData, UserData } from './Utils/NotesFunctionalities';
@@ -10,7 +10,6 @@ import PageError from './PageError.jsx'
 
 function App() {
   const [theme, setTheme] = useState('dark')
-
   const themeToggle = () => {
     setTheme(theme === 'light' ? 'dark' : 'light')
   }

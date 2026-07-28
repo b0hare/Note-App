@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react"
-import { EmailData, ThemeData } from "../../../Utils/NotesFunctionalities"
+import { EmailData, ThemeData, UserData } from "../../../Utils/NotesFunctionalities"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
@@ -12,6 +12,7 @@ export const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false)
 
     const { theme } = useContext(ThemeData)
+    const {setUser} = useContext(UserData)
     const [email, setEmail] = useState("")
     const [pass, setPass] = useState("")
     const togglePasswordVisibility = () => {
@@ -20,7 +21,7 @@ export const LoginPage = () => {
 
    function loginSubmit(e) {
         e.preventDefault();
-        validUser(email,pass, navigate);
+        validUser(email,pass, setUser, navigate);
     }
 
     return (

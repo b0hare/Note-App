@@ -34,8 +34,6 @@ function NoteStorage(props) {
             <div className="notesContainer w-full h-100 flex gap-3 mt-5 justify-center flex-wrap overflow-y-auto hide-scrollbar">
                 {
                     props.notes.map(function (elem, idx) {
-                        // console.log(idx, props.notes[idx].id);
-                        
                         return (
                             <SavedNotes notes={props.notes} key={idx} note={elem} id={props.notes[idx].id} arIdx={idx} setNotes={props.setNotes} setTitle={props.setTitle} setDetails={props.setDetails} deleteNote={props.deleteNote} editNote={props.editNote} />
                         )

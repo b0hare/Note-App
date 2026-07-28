@@ -2,35 +2,36 @@ import { createContext } from "react";
 import toast from "react-hot-toast";
 import axios from 'axios'
 
-export const deleteNote = async (id, setNotes) => {
-
+export const deleteNote = async (id, setNotes, setUser) => {
     let deleted = []
     try {
         deleted = await axios.delete(`http://localhost:3000/notes/delete/${id}`, { withCredentials: true })
-        toast.success(deleted.data)
-    } catch (error) {
-        toast.error("Couldn't Delete")
-    }
-
-    if (deleted.status === 200) {
         setNotes(prevNotes => {
             return prevNotes.filter(
                 note => note.id !== id
             );
         });
-    }
-    
-};
+        toast.success(deleted.data)
+    } catch (error) {
+        if (error.status === 401) {
+            setUser(null)
+            toast.error("Please login")
+            setNotes([])
+        } else {
+            toast.error("Note coudn't save")
+        }
 
+    };
+}
 
-export const editNote = (idToEdit, arIdx, setNotes, setTitle, setDetails, notes) => {
+export const editNote = (idToEdit, arIdx, setNotes, setTitle, setDetails, notes, setUser) => {
     setTitle(notes[arIdx].title)
     setDetails(notes[arIdx].content)
-    deleteNote(idToEdit, setNotes);
+    deleteNote(idToEdit, setNotes, setUser);
 }
 
 
-export const submitHandler = async (title, details, setNotes, setTitle, setDetails, notes) => {
+export const submitHandler = async (title, details, setTitle, setDetails, setNotes, setUser) => {
     if (title == "" && details == "") {
         toast.error("Oops! This process requires some input.");
     }
@@ -38,11 +39,20 @@ export const submitHandler = async (title, details, setNotes, setTitle, setDetai
         try {
             const create = await axios.post("http://localhost:3000/notes/create", { title, details }, { withCredentials: true })
             toast.success("Saved")
-            setNotes(prev => [...prev, create.data])
+            setNotes(prev => [create.data, ...prev])
+            setTitle("")
+            setDetails("")
         } catch (error) {
-            toast.error("Note Couldn't save")
+            if (error.status === 401) {
+                setUser(null)
+                setTitle(title)
+                setDetails(details)
+                setNotes([])
+                toast.error("Please login")
+            } else {
+                toast.error("Note coudn't save")
+            }
         }
-
     }
 
 }
@@ -56,6 +66,7 @@ export const getUser = async (setUser) => {
         setUser(res.data.user);
     } catch {
         setUser(null);
+        setNotes([])
     }
 };
 
