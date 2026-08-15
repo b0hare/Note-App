@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import SavedNotes from "./SavedNotes"
 import { allNotes, ThemeData, UserData } from "../../../Utils/NotesFunctionalities";
 import { LuNotepadText } from "react-icons/lu";
@@ -15,7 +15,7 @@ function NoteStorage(props) {
             try {
                 const userNotes = await allNotes(user.userId);
                 props.setNotes(userNotes);
-            } catch (err) {
+            } catch {
                 props.setNotes([]);
             }
         };

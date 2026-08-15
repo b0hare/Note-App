@@ -12,7 +12,8 @@ function ConfPass(props) {
     const [matched, setMatched] = useState("Re-enter Password")
 
     useEffect(() => {
-        if(props.pass === "" || props.confPass === ""){
+        
+        if (props.pass === "" || props.confPass === "") {
             setMatched("Re-enter Password")
         }
         else if (props.pass === props.confPass) {

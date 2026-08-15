@@ -1,15 +1,27 @@
 const otpVerification = (req, res) => {
-    const{enteredOtp, otp} = req.body;
+    const { enteredOtp } = req.body;
+    const { pendingOtp, pendingOtpEmail, pendingOtpExpiresAt } = req.session;
     
-    if (otp === -1) {
+    if (!pendingOtp || !pendingOtpEmail) {
         return res.status(404).send("Get OTP first")
     }
-    if (Number(enteredOtp) === otp) {
+
+    if (Date.now() > pendingOtpExpiresAt) {
+        delete req.session.pendingOtp
+        delete req.session.pendingOtpEmail
+        delete req.session.pendingOtpExpiresAt
+        return res.status(400).send("OTP has expired")
+    }
+
+    if (Number(enteredOtp) === pendingOtp) {
+        req.session.verifiedEmail = pendingOtpEmail
+        delete req.session.pendingOtp
+        delete req.session.pendingOtpEmail
+        delete req.session.pendingOtpExpiresAt
         return res.status(200).send("Verified")
     }
-    else if (Number(enteredOtp) !== otp && otp !== -1) {
-        return res.status(400).send("Invalid OTP")
-    }
+
+    return res.status(400).send("Invalid OTP")
 }
 
 export default otpVerification

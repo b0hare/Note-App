@@ -1,6 +1,4 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faPenNib } from '@fortawesome/free-solid-svg-icons';
-import { useState, useContext, useEffect } from 'react'
+import { useState, useContext } from 'react'
 import NoteSheet from './NoteSheet';
 import NoteStorage from './NoteStorage/NoteStorage';
 import {editNote, deleteNote, submitHandler} from '../../Utils/NotesFunctionalities';

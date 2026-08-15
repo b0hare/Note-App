@@ -6,7 +6,6 @@ import PassField from './password.jsx';
 import ConfPass from './confPass.jsx';
 import FormSubmit from "./submitBtn.jsx";
 import ServicePolicy from "./servicePolicy.jsx";
-import { EmailData } from "../../../../Utils/NotesFunctionalities.js";
 import { useState} from "react";
 import { handleSubmit } from "../../../../Utils/form.js";
 import {useNavigate} from 'react-router-dom';
@@ -28,23 +27,21 @@ function RegisterForm() {
         <form className="flex flex-col gap-3 bg-transparent" onSubmit={(e) => {
             handleSubmit(e, formData.name, formData.email, formData.pass, formData.confPass, formData.verifyStatus, navigate)
         }}>
-            <EmailData.Provider value={{
-                email: formData.email, setEmail: (email) => {
-                    setFormData(prev => ({
-                        ...prev,
-                        email
-                    }))
-                }
-            }}>
+            <>
                 <NameField name={formData.name} setName={(name) => {
                     setFormData(prev => ({
                         ...prev, name
                     }))
                 }} />
 
-                <EmailField />
+                <EmailField email={formData.email} setEmail={(email) => {
+                    setFormData(prev => ({
+                        ...prev,
+                        email
+                    }))
+                }} />
 
-                <GetOtp setOtp={(otp) => {
+                <GetOtp email={formData.email} setOtp={(otp) => {
                     setFormData(prev => ({
                         ...prev, otp
                     }))
@@ -75,7 +72,7 @@ function RegisterForm() {
                 <ServicePolicy />
                 <FormSubmit />
 
-            </EmailData.Provider>
+            </>
         </form>
     )
 }

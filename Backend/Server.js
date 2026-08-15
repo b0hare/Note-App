@@ -24,7 +24,7 @@ const sessionStore = new MySQLStore({}, db)
 
 app.use(session({
     key: "notes_app_sid",
-    secret: "MyNotesAppSecretKeyIsVeryVerySecret",
+    secret: process.env.SECRET_KEY,
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
@@ -43,7 +43,6 @@ app.use('/', authRouter)
 app.use('/', mailRouter)
 app.use('/', otpVerifyRouter)
 app.use('/', profileRouter)
-app.use('/', authRouter)
 app.use('/notes', noteRouter)
 
 const server = app.listen(PORT, () => {

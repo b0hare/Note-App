@@ -5,18 +5,19 @@ import encryptedPass from "../utils/encryptPassword.js";
 export const registerCont = async (req, res) => {
     const { name, email, pass, verifyStatus } = req.body
     const hash = await encryptedPass(pass);
-    if (verifyStatus) {
-        const [createUser] = db.execute("INSERT INTO users (name, email, password) VALUES (?, ?, ?)", [name, email, hash])
+    if (verifyStatus && req.session.verifiedEmail === email) {
+        const [createUser] = await db.execute("INSERT INTO users (name, email, password) VALUES (?, ?, ?)", [name, email, hash])
         if (createUser.affectedRows > 0) {
             req.session.userId = createUser.insertId;
             req.session.name = name;
+            req.session.verifiedEmail = null;
 
-            return res.sendStatus(201).json({
+            return res.status(201).json({
                 name: name,
                 userId: createUser.insertId
             });
         }
-        return res.sendStatus(400).send("Registration failed")
+        return res.status(400).send("Registration failed")
     }
     return res.status(403).send("Email not verified")
 
@@ -50,15 +51,52 @@ export async function loginControll(req, res) {
 }
 
 
-export function sendUserInfo(req, res) {
-    if(req.session.userId){
+export async function sendUserInfo(req, res) {
+    if (!req.session.userId) {
+        return res.sendStatus(401)
+    }
+
+    try {
+        const [rows] = await db.execute("SELECT id, name FROM users WHERE id = ?", [req.session.userId])
+
+        if (rows.length === 0) {
+            return req.session.destroy((error) => {
+                if (error) {
+                    return res.sendStatus(500)
+                }
+                res.clearCookie("notes_app_sid")
+                return res.sendStatus(401)
+            })
+        }
+
+        const [user] = rows
+        req.session.name = user.name
         return res.status(200).json({
             user: {
                 authenticated: true,
-                name: req.session.name,
-                userId: req.session.userId
+                name: user.name,
+                userId: user.id
             }
         })
+    } catch (error) {
+        return res.sendStatus(500)
     }
-    return res.status(401)
+}
+
+export async function resetPasswordCont(req, res) {
+    const { email, pass, verifyStatus } = req.body
+
+    if (!verifyStatus || req.session.verifiedEmail !== email) {
+        return res.status(403).send("Email not verified")
+    }
+
+    const hash = await encryptedPass(pass)
+    const [result] = await db.execute("UPDATE users SET password = ? WHERE email = ?", [hash, email])
+
+    if (result.affectedRows === 0) {
+        return res.status(404).send("User not found")
+    }
+
+    req.session.verifiedEmail = null
+    return res.status(200).send("Password reset successfully")
 }

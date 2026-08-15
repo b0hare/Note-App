@@ -1,10 +1,6 @@
-import { useContext } from "react";
-import { EmailData } from "../../../../Utils/NotesFunctionalities";
 import { handleMail } from "../../../../Utils/form";
 
-function EmailField() {
-    const {email, setEmail} = useContext(EmailData)
-
+function EmailField({ email, setEmail }) {
     return (
         <div className="flex flex-col gap-1">
             <label className="text-xs font-semibold text-gray-600" htmlFor="email">Email</label>

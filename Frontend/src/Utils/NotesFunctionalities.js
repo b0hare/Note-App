@@ -13,7 +13,7 @@ export const deleteNote = async (id, setNotes, setUser) => {
         });
         toast.success(deleted.data)
     } catch (error) {
-        if (error.status === 401) {
+        if (error.response?.status === 401) {
             setUser(null)
             toast.error("Please login")
             setNotes([])
@@ -43,7 +43,7 @@ export const submitHandler = async (title, details, setTitle, setDetails, setNot
             setTitle("")
             setDetails("")
         } catch (error) {
-            if (error.status === 401) {
+            if (error.response?.status === 401) {
                 setUser(null)
                 setTitle(title)
                 setDetails(details)
@@ -66,20 +66,21 @@ export const getUser = async (setUser) => {
         setUser(res.data.user);
     } catch {
         setUser(null);
-        setNotes([])
     }
 };
 
 // to get all the notes 
 export async function allNotes(userId) {
-    const notes = await axios.get(`http://localhost:3000/notes/${userId}`, { withCredentials: true })
+    try {
+        const notes = await axios.get(`http://localhost:3000/notes/${userId}`, { withCredentials: true })
     return notes.data
+    } catch (er) {
+        toast.error("Failed to get Notes")
+    }
 }
 
 
 export const ThemeData = createContext()
-
-export const EmailData = createContext()
 
 export const UserData = createContext()
 

@@ -1,6 +1,5 @@
 import axios from "axios";
 import toast from "react-hot-toast";
-import { getUser } from "./NotesFunctionalities";
 
 export function handleName(e, alpha, setAlpha) {        //Name
     alpha = e.target.value
@@ -20,27 +19,35 @@ export const handleOTP = async (setOtp, email) => {
 
     if (!email.trim()) {
         toast.error("Email is required")
-        return
+        return false
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailRegex.test(email)) {
         toast.error("Invalid Email");
-        return;
+        return false;
     }
     try {
-        const response = await axios.post("http://localhost:3000/send-otp", { email })
+        toast.success('Please wait!', {
+            icon: '⌛',
+            duration: 3000,
+        });
+        const response = await axios.post("http://localhost:3000/send-otp", { email }, { withCredentials: true })
 
         if (response.status === 200) {
             toast.success("OTP Sent!")
-            setOtp(response.data)
+            setOtp(0)
+            return true
         }
         else {
             toast.error("Failed to sent OTP")
+            return false
         }
 
     } catch (er) {
         console.error(er.message)
+        toast.error("Could not send OTP")
+        return false
     }
 }
 
@@ -67,7 +74,7 @@ export const otpVerify = async (enteredOtp, otp, setVerifyStatus) => {
             }, 400);
         }
         try {
-            const verified = await axios.post("http://localhost:3000/verify-otp", { enteredOtp, otp })
+            const verified = await axios.post("http://localhost:3000/verify-otp", { enteredOtp }, { withCredentials: true })
 
             if (verified.status === 200) {
                 setVerifyStatus(true)
@@ -75,9 +82,7 @@ export const otpVerify = async (enteredOtp, otp, setVerifyStatus) => {
             }
 
         } catch (error) {
-            if (error.response.status === 400) {
-                toast.error("Incorrect OTP")
-            }
+            toast.error(error.response?.data || "Could not verify OTP")
         }
     }
 
@@ -104,14 +109,14 @@ export const validPass = (e, setPass, setPassMsg) => {
 
 
 export async function handleSubmit(e, name, email, pass, confPass, verifyStatus, navigate) {
-    // e.preventDefault()
+    e.preventDefault()
     try {
-        await axios.post("http://localhost:3000/user-registration", { name, email, pass, verifyStatus }, {withCredentials: true})
+        await axios.post("http://localhost:3000/user-registration", { name, email, pass, verifyStatus }, { withCredentials: true })
         toast.success(`Account Created`)
         navigate("/", { replace: true })
     } catch (error) {
-        if (error.status === 403) {
-            toast.error("Email not varify")
+        if (error.response?.status === 403) {
+            toast.error("Email not verified")
         }
         else {
             toast.error("Registraion Failed")
@@ -124,12 +129,37 @@ export async function handleSubmit(e, name, email, pass, confPass, verifyStatus,
 
 export async function validUser(email, pass, setUser, navigate) {
     try {
-            const loggedIn = await axios.post("http://localhost:3000/login", { email, pass }, {withCredentials: true})
-            toast.success(`Welcome ${loggedIn.data.name}`)
-            setUser(loggedIn.data)
-            navigate('/', {replace: true})
-        } catch (err) {
-            console.error(err.response.data);
-            toast.error("Incorrect Credentials")
-        }
+        const loggedIn = await axios.post("http://localhost:3000/login", { email, pass }, { withCredentials: true })
+        toast.success(`Welcome ${loggedIn.data.name}`)
+        setUser(loggedIn.data)
+        navigate('/', { replace: true })
+    } catch (err) {
+        console.error(err.response.data);
+        toast.error("Incorrect Credentials")
+    }
+}
+
+export async function resetPassword(email, pass, confPass, verifyStatus, navigate) {
+    if (!verifyStatus) {
+        toast.error("Verify your email first")
+        return
+    }
+
+    if (pass !== confPass) {
+        toast.error("Passwords do not match")
+        return
+    }
+
+    if (pass.length < 8) {
+        toast.error("Password must be at least 8 characters")
+        return
+    }
+
+    try {
+        await axios.post("http://localhost:3000/reset-password", { email, pass, verifyStatus }, { withCredentials: true })
+        toast.success("Password reset successfully")
+        navigate("/login", { replace: true })
+    } catch (error) {
+        toast.error(error.response?.data || "Could not reset password")
+    }
 }
