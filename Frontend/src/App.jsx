@@ -8,6 +8,7 @@ import { RegisterPage } from './Components/Auth/Register/RegisterPage.jsx';
 import { LoginPage } from './Components/Auth/Login/LoginPage.jsx';
 import PageError from './PageError.jsx'
 import ForgetPass from './Components/Auth/Login/forgetPass.jsx';
+import UserProfile from './Components/Auth/Profile.jsx';
 
 function App() {
   const [theme, setTheme] = useState('dark')
@@ -32,6 +33,7 @@ function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path='/forgetPass' element={<ForgetPass/>}/>
+            <Route path="/profile" element={<UserProfile/>}/>
             <Route path="*" element={<PageError />} />
           </Routes>
         </div>

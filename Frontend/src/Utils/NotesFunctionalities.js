@@ -73,9 +73,22 @@ export const getUser = async (setUser) => {
 export async function allNotes(userId) {
     try {
         const notes = await axios.get(`http://localhost:3000/notes/${userId}`, { withCredentials: true })
-    return notes.data
-    } catch (er) {
+        return notes.data
+    } catch {
         toast.error("Failed to get Notes")
+        return []
+    }
+}
+
+
+//to navigate through profiles
+
+export async function profileAvailable(user, navigate) {
+    if (user !== null) {
+        navigate('/profile')
+    }
+    else {
+        navigate("/login")
     }
 }
 

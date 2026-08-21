@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
@@ -9,21 +9,8 @@ function ConfPass(props) {
         setShowConfirmPassword(!showConfirmPassword)
     }
 
-    const [matched, setMatched] = useState("Re-enter Password")
-
-    useEffect(() => {
-        
-        if (props.pass === "" || props.confPass === "") {
-            setMatched("Re-enter Password")
-        }
-        else if (props.pass === props.confPass) {
-            setMatched("Matched✅")
-        }
-        else {
-            setMatched("Password didn't Match❌")
-        }
-    }, [props.pass, props.confPass])
-
+    const matched = props.pass === "" || props.confPass === "" ? "Re-enter Password" : props.pass === props.confPass ?
+        "Matched✅" : "Password didn't Match❌"
 
     return (
         <div className="flex flex-col gap-1 relative">

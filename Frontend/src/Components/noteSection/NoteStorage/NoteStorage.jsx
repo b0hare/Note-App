@@ -21,7 +21,7 @@ function NoteStorage(props) {
         };
 
         loadNotes();
-    }, [user])
+    }, [user, props.setNotes])
 
     return (
         <div className="noteStorage w-full h-full p-5 sm:w-1/2">
