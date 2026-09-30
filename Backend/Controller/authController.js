@@ -57,7 +57,7 @@ export async function sendUserInfo(req, res) {
     }
 
     try {
-        const [rows] = await db.execute("SELECT id, name FROM users WHERE id = ?", [req.session.userId])
+        const [rows] = await db.execute("SELECT id, name, email, created_at FROM users WHERE id = ?", [req.session.userId])
 
         if (rows.length === 0) {
             return req.session.destroy((error) => {
@@ -75,7 +75,9 @@ export async function sendUserInfo(req, res) {
             user: {
                 authenticated: true,
                 name: user.name,
-                userId: user.id
+                userId: user.id,
+                email: user.email,
+                member_since: user.created_at
             }
         })
     } catch (error) {

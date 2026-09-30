@@ -45,6 +45,20 @@ export async function getAllNotes(req, res) {
     }
 }
 
+
+export async function editNote(req, res) {
+    const {id} = req.params;
+    const {title, details, userId} = req.body;
+    try {
+        const [result] = await db.execute("UPDATE notes SET title = ?, content = ? WHERE id = ? AND userId = ?", [title, details, id, userId]);
+        return res.status(200).send("Note Updated")
+    } catch(er) {
+        console.log(er);
+        
+        return res.sendStatus(500);
+    }
+}
+
 export async function deleteNote(req, res) {
     const noteId = req.params.id;
     try {

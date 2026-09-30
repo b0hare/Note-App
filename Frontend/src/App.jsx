@@ -7,7 +7,7 @@ import { Routes, Route } from 'react-router-dom'
 import { RegisterPage } from './Components/Auth/Register/RegisterPage.jsx';
 import { LoginPage } from './Components/Auth/Login/LoginPage.jsx';
 import PageError from './PageError.jsx'
-import ForgetPass from './Components/Auth/Login/forgetPass.jsx';
+import ForgetPass from './Components/Auth/Login/ForgetPass.jsx';
 import UserProfile from './Components/Auth/Profile.jsx';
 
 function App() {

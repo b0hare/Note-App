@@ -5,11 +5,17 @@ import { ThemeData } from '../../../Utils/NotesFunctionalities'
 
 function SavedNotes(props) {
 
-    const title = props.note.title.length > 15? `${props.note.title.slice(0, 16)}...`: props.note.title;
+    const noteTitle = props.note?.title ?? "";
 
-    var details = props.note.content > 180 ? `${props.note.title.slice(0,175)}...` : props.note.title;
+    const title = noteTitle.length > 15
+        ? `${noteTitle.slice(0, 15)}...`
+        : noteTitle;
 
-    const {theme} = useContext(ThemeData)
+    const noteContent = props.note?.content ?? "";
+
+    var details = noteContent.length > 180 ? `${noteContent.slice(0, 175)}...` : noteContent;
+
+    const { theme } = useContext(ThemeData)
 
     return (
         // #f0eaff 

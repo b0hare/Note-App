@@ -1,4 +1,7 @@
 function dateFormate(updated_at) {
+    if(updated_at === ""){
+        return ""
+    }
     const formattedDate = new Intl.DateTimeFormat('en-US', {
             month: 'short',    
             day: '2-digit',   

@@ -163,3 +163,27 @@ export async function resetPassword(email, pass, confPass, verifyStatus, navigat
         toast.error(error.response?.data || "Could not reset password")
     }
 }
+
+
+
+// to save edited name 
+
+export async function updateName(name,userId) {
+    try {
+        await axios.patch("http://localhost:3000/profile/update-name", {name, userId}, {withCredentials: true})
+        toast.success("Updated")
+    } catch {
+        toast.error("Request Failed")
+    }
+}
+
+export async function updateEmail(email,userId) {
+    try {
+        await axios.patch("http://localhost:3000/profile/update-email", {email, userId}, {withCredentials: true})
+        setTimeout(()=> {
+            toast.success("Updated")
+        }, 1500)
+    } catch {
+        toast.error("Request Failed")
+    }
+}

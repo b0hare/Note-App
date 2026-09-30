@@ -24,18 +24,40 @@ export const deleteNote = async (id, setNotes, setUser) => {
     };
 }
 
-export const editNote = (idToEdit, arIdx, setNotes, setTitle, setDetails, notes, setUser) => {
+export const editNote = (idToEdit, arIdx, setNotes, setTitle, setDetails, notes, userId, setUser) => {
     setTitle(notes[arIdx].title)
     setDetails(notes[arIdx].content)
-    deleteNote(idToEdit, setNotes, setUser);
+    submitHandler(idToEdit, notes[arIdx].title, notes[arIdx].content, setTitle, setDetails, setNotes, userId, setUser)
 }
 
 
-export const submitHandler = async (title, details, setTitle, setDetails, setNotes, setUser) => {
+export const submitHandler = async (id, title, details, setTitle, setDetails, setNotes, userId, setUser) => {
     if (title == "" && details == "") {
         toast.error("Oops! This process requires some input.");
+        return;
     }
-    else {
+    if (id > -1) {
+        console.log("inside edit note id > -1");
+        
+        try {
+            const create = await axios.patch(`http://localhost:3000/notes/edit/${id}`, {title, details, userId}, { withCredentials: true })
+            toast.success("Saved")
+            setNotes(prev => [create.data, ...prev])
+            setTitle("")
+            setDetails("")
+        } catch (error) {
+            if (error.response?.status === 401) {
+                setUser(null)
+                setTitle(title)
+                setDetails(details)
+                setNotes([])
+                toast.error("Please login")
+            } else {
+                toast.error("Note coudn't save")
+            }
+        }
+    }
+    else if(id === -1) {
         try {
             const create = await axios.post("http://localhost:3000/notes/create", { title, details }, { withCredentials: true })
             toast.success("Saved")
@@ -96,6 +118,5 @@ export async function profileAvailable(user, navigate) {
 export const ThemeData = createContext()
 
 export const UserData = createContext()
-
 
 
