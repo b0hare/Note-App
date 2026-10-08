@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 
 const encryptedPass = (pass) => {
-    const hash = bcrypt.hash(pass, 5);
+    const hash = bcrypt.hash(pass, 12);
     return hash;
 }
 

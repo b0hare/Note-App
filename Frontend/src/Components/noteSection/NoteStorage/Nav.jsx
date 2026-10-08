@@ -26,7 +26,7 @@ function Nav(props) {
 
             <div className="right flex items-center gap-3">
 
-                <Edit notes={props.notes} id={props.id} arIdx={props.arIdx} setTitle={props.setTitle} setDetails={props.setDetails} details={props.details} editNote={props.editNote} setNotes={props.setNotes} />
+                <Edit notes={props.notes} id={props.id} arIdx={props.arIdx} setTitle={props.setTitle} setDetails={props.setDetails} editNote={props.editNote} setEditingNoteId={props.setEditingNoteId} />
                 <Delete deleteNote={props.deleteNote} id={props.id} setNotes={props.setNotes} notes={props.notes} />
 
             </div>

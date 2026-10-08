@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { ThemeData, UserData } from "../../Utils/NotesFunctionalities";
 import { FaRegUser } from "react-icons/fa";
 import { CiMail } from "react-icons/ci";
@@ -7,18 +7,24 @@ import { IoExitOutline } from "react-icons/io5";
 import { MdDeleteOutline } from "react-icons/md";
 import { Check, Pencil, X } from 'lucide-react';
 import dateFormate from "../../Utils/formateDate";
-import { handleOTP, updateName, updateEmail } from "../../Utils/form";
+import { deleteAccount, handleOTP, logout, updateName, updateEmail, updateProfileImage } from "../../Utils/form";
 import EmailField from "./Register/form/email";
 import { MdMailOutline } from "react-icons/md";
 import OtpField from "./Register/form/OtpVerify";
+import toast from "react-hot-toast";
+import { useNavigate } from 'react-router-dom';
+
 
 function UserProfile() {
-    const { user } = useContext(UserData)
+    const { user, setUser } = useContext(UserData)
     const { theme } = useContext(ThemeData)
+    const navigate = useNavigate()
+    const imageInputRef = useRef(null)
+    const [profileImage, setProfileImage] = useState(user?.profile_image ?? '')
 
     const [formData, setFormData] = useState({
-        name: "",
-        email: "",
+        name: user?.name ?? "",
+        email: user?.email ?? "",
         editName: false,
         editEmail: false,
         otp: -1,
@@ -28,29 +34,36 @@ function UserProfile() {
         verifyStatus: false,
     });
 
-    useEffect(() => {
-        setFormData(prev => ({
-            ...prev,
-            name: user?.name ?? "",
-            email: user?.email ?? ""
-        }));
-    }, [user]);
-
     const [isHidden, setIsHidden] = useState(false)
 
-    useEffect(() => {
-        if (formData.verifyStatus) {
-            setIsHidden(false)
-            updateEmail(formData.email, user.userId)
-            setFormData(prev => ({
-                ...prev,
-                otp: -1,
-                otpRequested: false,
-                verifyStatus: false,
-                editEmail: false
-            }));
+    const handleProfileImage = (event) => {
+        const file = event.target.files?.[0]
+        event.target.value = ''
+
+        if (!file) return
+        if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+            toast.error('Choose a PNG, JPEG, or WebP image')
+            return
         }
-    }, [formData.verifyStatus])
+        if (file.size > 500 * 1024) {
+            toast.error('Profile image must be 500 KB or smaller')
+            return
+        }
+
+        const reader = new FileReader()
+        reader.onload = async () => {
+            try {
+                const imageData = await updateProfileImage(reader.result)
+                setProfileImage(imageData)
+                setUser((currentUser) => ({ ...currentUser, profile_image: imageData }))
+                toast.success('Profile image updated')
+            } catch (error) {
+                toast.error(error.response?.data || 'Could not update profile image')
+            }
+        }
+        reader.onerror = () => toast.error('Could not read the selected image')
+        reader.readAsDataURL(file)
+    }
 
     const sendOtp = async () => {
         const sent = await handleOTP(
@@ -101,11 +114,21 @@ function UserProfile() {
                 {formData.otpRequested && (
                     <OtpField
                         otp={formData.otp}
-                        setVerifyStatus={(verifyStatus) => {
-                            setFormData(prev => ({
-                                ...prev,
-                                verifyStatus
-                            }));
+                        setVerifyStatus={async (verifyStatus) => {
+                            if (!verifyStatus) return
+                            try {
+                                await updateEmail(formData.email)
+                                setIsHidden(false)
+                                setFormData(prev => ({
+                                    ...prev,
+                                    otp: -1,
+                                    otpRequested: false,
+                                    verifyStatus: false,
+                                    editEmail: false
+                                }));
+                            } catch {
+                                toast.error('Could not update email')
+                            }
                         }}
                     />
                 )}
@@ -122,8 +145,9 @@ function UserProfile() {
                 <div className="border-solid border-1 border-gray-900 flex max-[500px]:flex-wrap gap-10 max-[500px]:gap-5 sm:p-7 p-3 my-5 rounded-md">
 
                     <div className="relative">
-                        <img src="https://i.ibb.co/39c0G01W/Copilot-20260819-224945.png" alt="profile image" className="w-[100px] h-[100px] rounded-full object-cover" />
-                        <button className={`cursor-pointer p-2 rounded-full absolute right-0 top-18 ${theme === 'light' ? 'bg-[#efeaff]' : 'bg-[#161629]'} self-end`} >
+                        <img src={profileImage || "https://i.ibb.co/39c0G01W/Copilot-20260819-224945.png"} alt="Profile" className="w-[100px] h-[100px] rounded-full object-cover" />
+                        <input ref={imageInputRef} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={handleProfileImage} />
+                        <button type="button" aria-label="Change profile image" onClick={() => imageInputRef.current?.click()} className={`cursor-pointer p-2 rounded-full absolute right-0 top-18 ${theme === 'light' ? 'bg-[#efeaff]' : 'bg-[#161629]'} self-end`} >
                             <Pencil color="#a855f7" size={16} />
                         </button>
                     </div>
@@ -151,7 +175,7 @@ function UserProfile() {
                             <button
                                 onClick={() => {
                                     if (formData.editName) {
-                                        updateName(formData.name, user.userId);
+                                        updateName(formData.name);
                                     }
 
                                     setFormData(prev => ({
@@ -237,15 +261,29 @@ function UserProfile() {
                     </div>
 
                     <div className="flex gap-2 max-[500px]:flex-wrap ">
-                        <button className="text-red-500 flex items-center gap-3 border-1 rounded p-2 w-[160px] justify-center" onClick={() => {
-                            console.log("Logged Out");
-
+                        <button className="text-red-500 flex items-center gap-3 border-1 rounded p-2 w-[160px] justify-center" onClick={async () => {
+                            try {
+                                await logout()
+                                setUser(null)
+                                navigate('/login', { replace: true })
+                            } catch {
+                                toast.error('Could not log out')
+                            }
                         }}>
                             <IoExitOutline className="text-red-500 text-xl" />
                             <p>Logout</p>
                         </button>
 
-                        <button className="text-red-700 flex items-center gap-3 border-1 rounded p-2 justify-center">
+                        <button className="text-red-700 flex items-center gap-3 border-1 rounded p-2 justify-center" onClick={async () => {
+                            if (!window.confirm('Delete your account and all notes? This cannot be undone.')) return
+                            try {
+                                await deleteAccount()
+                                setUser(null)
+                                navigate('/register', { replace: true })
+                            } catch {
+                                toast.error('Could not delete account')
+                            }
+                        }}>
                             <MdDeleteOutline className="text-red-500 text-xl" />
                             <p className="font-semibold">Delete Account</p>
                         </button>

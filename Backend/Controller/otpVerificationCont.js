@@ -13,14 +13,20 @@ const otpVerification = (req, res) => {
         return res.status(400).send("OTP has expired")
     }
 
+    if ((req.session.pendingOtpAttempts || 0) >= 5) {
+        return res.status(429).send("Too many invalid verification attempts")
+    }
+
     if (Number(enteredOtp) === pendingOtp) {
         req.session.verifiedEmail = pendingOtpEmail
         delete req.session.pendingOtp
         delete req.session.pendingOtpEmail
         delete req.session.pendingOtpExpiresAt
+        delete req.session.pendingOtpAttempts
         return res.status(200).send("Verified")
     }
 
+    req.session.pendingOtpAttempts = (req.session.pendingOtpAttempts || 0) + 1
     return res.status(400).send("Invalid OTP")
 }
 

@@ -1,16 +1,17 @@
 
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import { emailPattern, normalizeEmail } from '../utils/validation.js';
 
 function validateMail(req,res,next) {
-    const {email} = req.body
-    if (typeof email !== "string" || !email.trim()) {
+    const email = normalizeEmail(req.body.email)
+    if (!email) {
         return res.status(400).send("Please provide an email address")
     }
 
-    if (!emailRegex.test(email)) {
+    if (!emailPattern.test(email)) {
         return res.status(400).send("Invalid email address")
     }
 
+    req.body.email = email
     return next()
 }
 

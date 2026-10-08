@@ -17,12 +17,13 @@ function NoteSheet(props) {
         props.setDetails("")
     }
 
-    const {user, setUser} = useContext(UserData)
+    const { setUser } = useContext(UserData)
 
     return (
-        <form onSubmit={(e) => {
+        <form onSubmit={async (e) => {
             e.preventDefault();
-            props.submitHandler(-1, props.title, props.details, props.setTitle, props.setDetails, props.setNotes, user.userId, setUser);
+            const saved = await props.submitHandler(props.editingNoteId ?? -1, props.title, props.details, props.setTitle, props.setDetails, props.setNotes, setUser);
+            if (saved) props.setEditingNoteId(null)
 
         }} className="min-w-80 lg:w-1/2 h-1/2 md:w-1/2 w-70  p-5 rounded-md noteSheet flex flex-col gap-2">
             <Heading title={props.title} setTitle={props.setTitle} />

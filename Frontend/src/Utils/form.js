@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../api";
 import toast from "react-hot-toast";
 
 export function handleName(e, alpha, setAlpha) {        //Name
@@ -32,7 +32,7 @@ export const handleOTP = async (setOtp, email) => {
             icon: '⌛',
             duration: 3000,
         });
-        const response = await axios.post("http://localhost:3000/send-otp", { email }, { withCredentials: true })
+        const response = await api.post("/send-otp", { email })
 
         if (response.status === 200) {
             toast.success("OTP Sent!")
@@ -74,7 +74,7 @@ export const otpVerify = async (enteredOtp, otp, setVerifyStatus) => {
             }, 400);
         }
         try {
-            const verified = await axios.post("http://localhost:3000/verify-otp", { enteredOtp }, { withCredentials: true })
+            const verified = await api.post("/verify-otp", { enteredOtp })
 
             if (verified.status === 200) {
                 setVerifyStatus(true)
@@ -111,7 +111,7 @@ export const validPass = (e, setPass, setPassMsg) => {
 export async function handleSubmit(e, name, email, pass, confPass, verifyStatus, navigate) {
     e.preventDefault()
     try {
-        await axios.post("http://localhost:3000/user-registration", { name, email, pass, verifyStatus }, { withCredentials: true })
+        await api.post("/user-registration", { name, email, pass, verifyStatus })
         toast.success(`Account Created`)
         navigate("/", { replace: true })
     } catch (error) {
@@ -129,7 +129,7 @@ export async function handleSubmit(e, name, email, pass, confPass, verifyStatus,
 
 export async function validUser(email, pass, setUser, navigate) {
     try {
-        const loggedIn = await axios.post("http://localhost:3000/login", { email, pass }, { withCredentials: true })
+        const loggedIn = await api.post("/login", { email, pass })
         toast.success(`Welcome ${loggedIn.data.name}`)
         setUser(loggedIn.data)
         navigate('/', { replace: true })
@@ -156,7 +156,7 @@ export async function resetPassword(email, pass, confPass, verifyStatus, navigat
     }
 
     try {
-        await axios.post("http://localhost:3000/reset-password", { email, pass, verifyStatus }, { withCredentials: true })
+        await api.post("/reset-password", { email, pass, verifyStatus })
         toast.success("Password reset successfully")
         navigate("/login", { replace: true })
     } catch (error) {
@@ -168,22 +168,35 @@ export async function resetPassword(email, pass, confPass, verifyStatus, navigat
 
 // to save edited name 
 
-export async function updateName(name,userId) {
+export async function updateName(name) {
     try {
-        await axios.patch("http://localhost:3000/profile/update-name", {name, userId}, {withCredentials: true})
+        await api.patch("/profile/update-name", {name})
         toast.success("Updated")
     } catch {
         toast.error("Request Failed")
     }
 }
 
-export async function updateEmail(email,userId) {
+export async function updateEmail(email) {
     try {
-        await axios.patch("http://localhost:3000/profile/update-email", {email, userId}, {withCredentials: true})
+        await api.patch("/profile/update-email", {email})
         setTimeout(()=> {
             toast.success("Updated")
         }, 1500)
     } catch {
         toast.error("Request Failed")
     }
+}
+
+export async function logout() {
+    await api.post('/logout')
+}
+
+export async function deleteAccount() {
+    await api.delete('/account')
+}
+
+export async function updateProfileImage(imageData) {
+    const response = await api.patch('/profile/update-image', { imageData })
+    return response.data.profile_image
 }

@@ -10,7 +10,7 @@ function Delete(props) {
     const {setUser} = useContext(UserData)
     return (
         <button className={`cursor-pointer p-2 rounded-md ${theme === 'light' ? 'bg-[#f9ecef]' : 'bg-[#19121d]'}`} onClick={() => {
-            props.deleteNote(props.id, props.setNotes, setUser)
+            props.deleteNote(props.id, props.setNotes, setUser, false)
         }}>
             <Trash2 color="#ef4444" size={17} />
         </button>

@@ -4,7 +4,7 @@ import {createNote, deleteNote, getAllNotes, getNote, editNote} from '../Control
 
 const noteRouter = express.Router();
 
-noteRouter.get("/:userId", authUser, getAllNotes)
+noteRouter.get("/", authUser, getAllNotes)
 noteRouter.post("/create", authUser, createNote);
 noteRouter.get("/get/:id", authUser, getNote);
 noteRouter.patch("/edit/:id", authUser, editNote);
